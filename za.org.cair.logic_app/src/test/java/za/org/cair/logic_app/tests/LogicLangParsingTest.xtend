@@ -17,6 +17,12 @@ import za.org.cair.logic_app.logicLang.Model
 import za.org.cair.logic_app.logicLang.Implication
 import static org.junit.Assert.assertThat
 import static org.hamcrest.CoreMatchers.instanceOf
+import za.org.cair.logic_app.logicLang.BooleanVariable
+import za.org.cair.logic_app.logicLang.BooleanLiteral
+import static org.junit.Assert.assertEquals
+import za.org.cair.logic_app.logicLang.Disjunction
+import za.org.cair.logic_app.logicLang.Conjunction
+import za.org.cair.logic_app.logicLang.Negation
 
 @ExtendWith(InjectionExtension)
 @InjectWith(LogicLangInjectorProvider)
@@ -40,11 +46,39 @@ class LogicLangParsingTest {
 	def void birdExample() {
 		val result = parseHelper.parse(readTestFile("test1.logic"))
 		
+		// 6 propositions defined
 		Assertions.assertEquals(6, result.propositions.length)
 		
+		// test first proposition: bird -> flies
 		val prop1 = result.propositions.get(0)
 		assertThat(prop1, instanceOf(Implication))
+		var impl = prop1 as Implication
+		assertThat(impl.left, instanceOf(BooleanVariable))
+		val leftBool = impl.left as BooleanVariable
+		assertThat(impl.right, instanceOf(BooleanVariable))
+		val rightBool = impl.right as BooleanVariable
+		Assertions.assertEquals("bird", leftBool.name)
+		Assertions.assertEquals("flies", rightBool.name)
 		
+		// test last proposition by finding an inner bool and type-checking along the way
+		val prop6 = result.propositions.get(5)
+		assertThat(prop6, instanceOf(Implication))
+		impl = prop6 as Implication
+		assertThat(impl.right, instanceOf(BooleanLiteral))
+		val rightMostBool = impl.right as BooleanLiteral
+		assertEquals("T", rightMostBool.truth)
+		var trav = impl.left as Object
+		assertThat(trav, instanceOf(Implication))
+		trav = (trav as Implication).left
+		assertThat(trav, instanceOf(Disjunction))
+		trav = (trav as Disjunction).right
+		assertThat(trav, instanceOf(Conjunction))
+		trav = (trav as Conjunction).left
+		assertThat(trav, instanceOf(Negation))
+		trav = (trav as Negation).expression
+		assertThat(trav, instanceOf(BooleanVariable))
+		val boolName = (trav as BooleanVariable).name
+		assertEquals("robin", boolName)
 	}
 	
 	def static String readTestFile(String fileName){
