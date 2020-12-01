@@ -1,0 +1,6 @@
+prop bird -> flies
+prop robin -> bird
+prop robin & bird -> ~flies
+prop bird -> (robin | penguin | ostrich)
+prop bird -> F
+prop ((robin | (~robin & penguin)) -> flies) -> T

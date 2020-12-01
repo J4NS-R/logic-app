@@ -1,0 +1,7 @@
+
+src/main/x*-gen/
+
+src/main/webapp/xtext-resources/generated/
+
+target/
+

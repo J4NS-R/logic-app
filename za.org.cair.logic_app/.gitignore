@@ -1,0 +1,8 @@
+
+model/generated/
+
+src/main/x*-gen/
+src/test/x*-gen/
+
+target/
+

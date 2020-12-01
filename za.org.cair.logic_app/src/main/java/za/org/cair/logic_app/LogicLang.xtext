@@ -1,0 +1,60 @@
+grammar za.org.cair.logic_app.LogicLang with org.eclipse.xtext.common.Terminals
+
+generate logicLang "http://www.cair.org.za/logic_app/LogicLang"
+
+Model:
+	propositions+=Proposition*;
+
+
+Proposition:
+	'prop' Sentence
+;
+
+Sentence:
+	Equivalence // will recurse down delegation chain
+;
+
+// How to deal with generic expressions:
+// https://www.eclipse.org/Xtext/documentation/307_special_languages.html
+// Summary: Avoid recursive definitions by specifying precedence
+// by way of a "delegation chain" (top-down in this file)
+
+// all rules here return Propositions, which ensures
+// they produce AST's and not datatypes.
+// Note where the precedence is the same, these rules are left-associative 
+
+
+Equivalence returns Sentence:
+	Implication ({Equivalence.left=current} '<->' right=Implication)*
+;
+
+Implication returns Sentence:
+	Disjunction ({Implication.left=current} '->' right=Disjunction)*
+;
+
+Disjunction returns Sentence:
+	Conjunction ({Disjunction.left=current} '|' right=Conjunction)*
+;
+
+Conjunction returns Sentence:
+	Primary ({Conjunction.left=current} '&' right=Primary)*
+;
+
+Primary returns Sentence: 
+// either terminal, negation, or restart the delegation chain
+	Boolean |
+	{Negation} '~' expression=Primary |
+	'(' Equivalence ')'
+;
+
+Boolean:
+	BooleanLiteral |
+	BooleanVariable
+;
+
+BooleanVariable:
+	name=ID // user-declared variable name
+;
+	
+BooleanLiteral:
+	truth=('T' | 'F');
