@@ -34,7 +34,8 @@ class LogicLangParsingTest {
 	@Test
 	def void loadModel() {
 		val result = parseHelper.parse('''
-			prop (A) | ~(~C & ~D) -> (C|D) <-> A
+			prop (A) | ~(~C & ~D) -> (C|D) <-> A # post line comment
+			# own line comment
 			prop A or not (not C and not D) implies (C or D) iff A
 		''')
 		Assertions.assertNotNull(result)

@@ -2,11 +2,11 @@ grammar za.org.cair.logic_app.LogicLang with org.eclipse.xtext.common.Terminals
 
 generate logicLang "http://www.cair.org.za/logic_app/LogicLang"
 
-Model:
+Model hidden(WS, COMMENT): // own-line comments
 	propositions+=Proposition*;
 
 
-Proposition:
+Proposition hidden(WS, COMMENT): // post-line comments
 	'prop' Sentence
 ;
 
@@ -63,4 +63,8 @@ BooleanLiteral:
 enum BooleanValuesEnum:
 	TRUE = 'T' | TRUE = 'True' |
 	FALSE = 'F' | FALSE = 'False'
+;
+
+terminal COMMENT: // #-initiated, ending on a newline char
+	'#' !('\n'|'\r')* ('\r'? '\n')?
 ;
