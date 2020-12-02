@@ -1,0 +1,6 @@
+prop bird implies flies
+prop robin implies bird
+prop robin and bird implies ~flies
+prop bird -> (robin or penguin or ostrich)
+prop bird -> False
+prop ((robin | ( not robin and penguin)) implies flies) implies True

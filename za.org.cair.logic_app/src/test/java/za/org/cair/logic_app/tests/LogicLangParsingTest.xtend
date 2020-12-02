@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals
 import za.org.cair.logic_app.logicLang.Disjunction
 import za.org.cair.logic_app.logicLang.Conjunction
 import za.org.cair.logic_app.logicLang.Negation
+import za.org.cair.logic_app.logicLang.BooleanValuesEnum
 
 @ExtendWith(InjectionExtension)
 @InjectWith(LogicLangInjectorProvider)
@@ -33,19 +34,32 @@ class LogicLangParsingTest {
 	@Test
 	def void loadModel() {
 		val result = parseHelper.parse('''
-			prop (A) | ~(~C & ~D) -> (C|D) <-> A
+			prop (A) | ~(~C & ~D) -> (C|D) <-> A # post line comment
+			# own line comment
+			prop A or not (not C and not D) implies (C or D) iff A
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
 		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
 		
-		//println(dump(result, ""))
+		// println(dump(result, ""))
 	}
 	
 	@Test
-	def void birdExample() {
-		val result = parseHelper.parse(readTestFile("test1.logic"))
-		
+	def void parseBirdsVar1() {
+		// symbols as operators example
+		val result = parseHelper.parse(readTestFile("birds_var1.logic"))
+		birdTester(result)
+	}
+	
+	@Test
+	def void parseBirdsVar2() {
+		// reserved words as operators example
+		val result = parseHelper.parse(readTestFile("birds_var2.logic"))
+		birdTester(result)
+	}
+	
+	def void birdTester(Model result){
 		// 6 propositions defined
 		Assertions.assertEquals(6, result.propositions.length)
 		
@@ -66,7 +80,7 @@ class LogicLangParsingTest {
 		impl = prop6 as Implication
 		assertThat(impl.right, instanceOf(BooleanLiteral))
 		val rightMostBool = impl.right as BooleanLiteral
-		assertEquals("T", rightMostBool.truth)
+		assertEquals(BooleanValuesEnum.TRUE, rightMostBool.truth)
 		var trav = impl.left as Object
 		assertThat(trav, instanceOf(Implication))
 		trav = (trav as Implication).left
@@ -101,7 +115,7 @@ class LogicLangParsingTest {
 	        res += ' ->' + a.toString().replaceFirst ('.*[.]impl[.](.*)Impl[^(]*', '$1 ')
 	    res += "\n"
 	    for (f :mod_.eContents) {
-	        res += f.dump (indent+"    ")
+	        res += f.dump (indent+"   ")
 	    }
 	    return res
 	}
