@@ -25,25 +25,25 @@ Sentence:
 
 
 Equivalence returns Sentence:
-	Implication ({Equivalence.left=current} '<->' right=Implication)*
+	Implication ({Equivalence.left=current} ('<->' | 'iff') right=Implication)*
 ;
 
 Implication returns Sentence:
-	Disjunction ({Implication.left=current} '->' right=Disjunction)*
+	Disjunction ({Implication.left=current} ('->' | 'implies') right=Disjunction)*
 ;
 
 Disjunction returns Sentence:
-	Conjunction ({Disjunction.left=current} '|' right=Conjunction)*
+	Conjunction ({Disjunction.left=current} ('|' | 'or') right=Conjunction)*
 ;
 
 Conjunction returns Sentence:
-	Primary ({Conjunction.left=current} '&' right=Primary)*
+	Primary ({Conjunction.left=current} ('&' | 'and') right=Primary)*
 ;
 
 Primary returns Sentence: 
 // either terminal, negation, or restart the delegation chain
 	Boolean |
-	{Negation} '~' expression=Primary |
+	{Negation} ('~' | 'not') expression=Primary |
 	'(' Equivalence ')'
 ;
 
@@ -57,4 +57,10 @@ BooleanVariable:
 ;
 	
 BooleanLiteral:
-	truth=('T' | 'F');
+	truth=BooleanValuesEnum
+; 
+	
+enum BooleanValuesEnum:
+	TRUE = 'T' | TRUE = 'True' |
+	FALSE = 'F' | FALSE = 'False'
+;
