@@ -58,7 +58,7 @@ public class Main {
 		}
 
 		// Configure and start the generator
-		fileAccess.setOutputPath("src-gen/");
+		fileAccess.setOutputPath("./");
 		GeneratorContext context = new GeneratorContext();
 		context.setCancelIndicator(CancelIndicator.NullImpl);
 		generator.generate(resource, fileAccess, context);
