@@ -37,6 +37,7 @@ class LogicLangParsingTest {
 			prop (A) | ~(~C & ~D) -> (C|D) <-> A # post line comment
 			# own line comment
 			prop A or not (not C and not D) implies (C or D) iff A
+			cmd just parse
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors

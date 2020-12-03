@@ -1,9 +1,13 @@
 grammar za.org.cair.logic_app.LogicLang with org.eclipse.xtext.common.Terminals
 
 generate logicLang "http://www.cair.org.za/logic_app/LogicLang"
+// URL is just a namespace.
 
 Model hidden(WS, COMMENT): // own-line comments
-	propositions+=Proposition*;
+	// & used to mean any ordering
+	propositions+=Proposition* &
+	commands+=Command*
+;
 
 
 Proposition hidden(WS, COMMENT): // post-line comments
@@ -60,10 +64,34 @@ BooleanLiteral:
 	truth=BooleanValuesEnum
 ; 
 	
-enum BooleanValuesEnum:
+// ignore the warnings here. This is valid syntax.
+enum BooleanValuesEnum: 
 	TRUE = 'T' | TRUE = 'True' |
 	FALSE = 'F' | FALSE = 'False'
 ;
+
+
+// Commands =====
+Command:
+	'cmd' (
+		VariantTranslationCommand |
+		JustParseCommand
+		// TODO: other commands go here
+	) 
+;
+
+enum LogicLangVariant:
+	SYMBOL_OP = 'symbol variant' | 
+	RESWORD_OP = 'reserved word variant'
+;
+VariantTranslationCommand:
+	'translate' 'to' variant=LogicLangVariant
+;
+
+JustParseCommand:
+	{JustParseCommand} 'just' 'parse'
+;
+
 
 terminal COMMENT: // #-initiated, ending on a newline char
 	'#' !('\n'|'\r')* ('\r'? '\n')?
