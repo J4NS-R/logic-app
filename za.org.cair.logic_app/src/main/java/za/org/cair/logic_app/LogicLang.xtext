@@ -11,11 +11,11 @@ Model hidden(WS, COMMENT): // own-line comments
 
 
 Proposition hidden(WS, COMMENT): // post-line comments
-	'prop' Sentence
+	'prop' sentence=Sentence
 ;
 
 Sentence:
-	Equivalence // will recurse down delegation chain
+	expression=Equivalence // will recurse down delegation chain
 ;
 
 // How to deal with generic expressions:
