@@ -15,7 +15,7 @@ Proposition hidden(WS, COMMENT): // post-line comments
 ;
 
 Sentence:
-	expression=Equivalence // will recurse down delegation chain
+	Equivalence // will recurse down delegation chain
 ;
 
 // How to deal with generic expressions:
@@ -47,7 +47,7 @@ Conjunction returns Sentence:
 Primary returns Sentence: 
 // either terminal, negation, or restart the delegation chain
 	Boolean |
-	{Negation} ('~' | 'not') expression=Primary |
+	({Negation} ('~' | 'not') expression=Primary) |
 	'(' Equivalence ')'
 ;
 
