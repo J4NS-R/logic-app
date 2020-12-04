@@ -1,5 +1,5 @@
 
-name: Build a CLI logic lang compiler
+name: Build CLI logic lang compiler
 
 on: [push, pull_request]
 
