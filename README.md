@@ -16,7 +16,7 @@ The purpose is achieved by way of three parts:
 
 Xtext compilers are not typically used on the command like (like e.g. `gcc` and `javac`) so support (especially in CI contexts) is very limited. Through some shady hacks I got it working (for now). 
 
-Download the compiler jar from the "CLI logic lang compiler" workflow build artifacts. Create a file written in the specified logic language (with `.logic` as file extension). Compile as follows:
+Download the compiler jar from the [CLI logic lang compiler workflow](https://github.com/Koellewe/logic-app/actions?query=workflow%3A%22Build+CLI+logic+lang+compiler%22) build artifacts. Create a file written in the specified logic language (with `.logic` as file extension). Compile as follows:
 
 ```sh
 java -jar logic-compiler.jar example.logic
