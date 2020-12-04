@@ -1,12 +1,12 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Run all tests
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  all_tests:
 
     runs-on: ubuntu-latest
 
@@ -16,7 +16,14 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.11
-    - name: Compile all
-      run: mvn -B compile
-    - name: Run all tests
+
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }} # hash poms
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Compile and run all tests
       run: mvn -B test
+

@@ -37,6 +37,7 @@ class LogicLangParsingTest {
 			prop (A) | ~(~C & ~D) -> (C|D) <-> A # post line comment
 			# own line comment
 			prop A or not (not C and not D) implies (C or D) iff A
+			cmd just parse
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -64,7 +65,7 @@ class LogicLangParsingTest {
 		Assertions.assertEquals(6, result.propositions.length)
 		
 		// test first proposition: bird -> flies
-		val prop1 = result.propositions.get(0)
+		val prop1 = result.propositions.get(0).sentence
 		assertThat(prop1, instanceOf(Implication))
 		var impl = prop1 as Implication
 		assertThat(impl.left, instanceOf(BooleanVariable))
@@ -75,7 +76,7 @@ class LogicLangParsingTest {
 		Assertions.assertEquals("flies", rightBool.name)
 		
 		// test last proposition by finding an inner bool and type-checking along the way
-		val prop6 = result.propositions.get(5)
+		val prop6 = result.propositions.get(5).sentence
 		assertThat(prop6, instanceOf(Implication))
 		impl = prop6 as Implication
 		assertThat(impl.right, instanceOf(BooleanLiteral))
