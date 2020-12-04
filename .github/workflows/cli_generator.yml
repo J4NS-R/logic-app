@@ -37,6 +37,6 @@ jobs:
     - name: Store fat jar artifact
       uses: actions/upload-artifact@v1
       with:
-        name: logic-compiler.jar
-        path: dist
+        name: logic-compiler.jar  # name of the artifact
+        path: dist/logic-compiler.jar
       
