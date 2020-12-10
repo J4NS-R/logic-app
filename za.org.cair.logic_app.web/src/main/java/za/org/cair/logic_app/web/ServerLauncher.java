@@ -19,9 +19,9 @@ import org.eclipse.jetty.webapp.WebXmlConfiguration;
  */
 public class ServerLauncher {
 	public static void main(String[] args) {
-		Server server = new Server(new InetSocketAddress("localhost", 8080));
+		Server server = new Server(new InetSocketAddress("localhost", 8002));
 		WebAppContext ctx = new WebAppContext();
-		ctx.setResourceBase("WebRoot");
+		ctx.setResourceBase("src/main/webapp");
 		ctx.setWelcomeFiles(new String[] {"index.html"});
 		ctx.setContextPath("/");
 		ctx.setConfigurations(new Configuration[] {
