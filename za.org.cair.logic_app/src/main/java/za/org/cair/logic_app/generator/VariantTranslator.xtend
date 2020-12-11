@@ -22,19 +22,28 @@ class VariantTranslator {
 		NOT, AND, OR, IMPLIES, IFF
 	}
 	// logic lang variation mapping
-	static val VAR_SYMBOL_MAPPING = #{
+	// these maps are also used in validation
+	public static val VAR_SYMBOL_MAPPING = #{
 		OP.NOT -> '~',
 		OP.AND -> '&',
 		OP.OR -> '|',
 		OP.IMPLIES -> '->',
 		OP.IFF -> '<->'
 	}
-	static val VAR_RESWORD_MAPPING = #{
+	public static val VAR_RESWORD_MAPPING = #{
 		OP.NOT -> 'not ', // adding space here as NOT is a special case
 		OP.AND -> 'and',
 		OP.OR -> 'or',
 		OP.IMPLIES -> 'implies',
 		OP.IFF -> 'iff'
+	}
+	public static val VAR_SYMBOL_BOOLS = #{
+		true -> 'T',
+		false -> 'F'
+	}
+	public static val VAR_RESWORD_BOOLS = #{
+		true -> 'True',
+		false -> 'False'
 	}
 	
 	
@@ -119,9 +128,9 @@ class VariantTranslator {
 	 */
 	def private String strTruth(BooleanValuesEnum bool){
 		if (cmd.variant == LogicLangVariant.SYMBOL_OP){
-			return bool == BooleanValuesEnum.TRUE ? 'T' : 'F'
+			return VAR_SYMBOL_BOOLS.get(bool == BooleanValuesEnum.TRUE)
 		}else{
-			return bool == BooleanValuesEnum.TRUE ? 'True' : 'False'
+			return VAR_RESWORD_BOOLS.get(bool == BooleanValuesEnum.TRUE)
 		}
 	}
 	
