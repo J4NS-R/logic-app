@@ -36,8 +36,8 @@
 			console.log("request created");
 			req.open( "POST", "http://localhost:8003/translate", true);
 			var text = ace.edit('xtext-editor').getSession().getValue();
-			req.send("inputText="+text);
-			return req.responseText;
+			req.send(text);
+			console.log(req.responseText);
 			}
 	</script>
 </head>

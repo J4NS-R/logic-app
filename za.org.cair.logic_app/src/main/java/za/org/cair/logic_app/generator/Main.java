@@ -3,6 +3,9 @@
  */
 package za.org.cair.logic_app.generator;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
@@ -43,10 +46,11 @@ public class Main {
 	@Inject 
 	private JavaIoFileSystemAccess fileAccess;
 
-	protected void runGenerator(String string) {
+	public void runGenerator(String string) {
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
-		Resource resource = set.getResource(URI.createFileURI(string), true);
+		System.out.println("current directory: "+System.getProperty("user.dir"));
+		Resource resource = set.getResource(URI.createFileURI("./"+string), true);
 
 		// Validate the resource
 		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
@@ -65,4 +69,5 @@ public class Main {
 
 		System.out.println("Code generation finished.");
 	}
+	
 }
