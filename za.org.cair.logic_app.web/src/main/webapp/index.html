@@ -28,8 +28,19 @@
 			});
 		});
 	</script>
+	
+	<script>
+		function translateLogic() {
+			console.log("function being triggered.");
+			let req = new XMLHttpRequest();
+			console.log("request created");
+			req.open( "POST", "http://localhost:8003/translate", true);
+			var text = ace.edit('xtext-editor').getSession().getValue();
+			req.send("inputText="+text);
+			return req.responseText;
+			}
+	</script>
 </head>
-<body>
 
 <div class="container">
 	<div class="header">
@@ -39,6 +50,11 @@
 		<div id="xtext-editor" data-editor-xtext-lang="logic"></div>
 	</div>
 </div>
-
+<form onsubmit = "return false">
+<button onClick="translateLogic()"> Compile </button>
+<button class="save-button" onclick="console.log(ace.edit('xtext-editor').getSession().getValue());"> Test </button>
+</form>
 </body>
 </html>
+
+
