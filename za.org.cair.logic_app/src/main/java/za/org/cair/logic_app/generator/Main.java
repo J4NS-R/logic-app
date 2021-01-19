@@ -6,10 +6,14 @@ package za.org.cair.logic_app.generator;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
+import java.io.FileNotFoundException;
+
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import java.util.List;
+import java.util.Scanner;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -49,8 +53,7 @@ public class Main {
 	public void runGenerator(String string) {
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
-		System.out.println("current directory: "+System.getProperty("user.dir"));
-		Resource resource = set.getResource(URI.createFileURI("./"+string), true);
+		Resource resource = set.getResource(URI.createFileURI(string), true);
 
 		// Validate the resource
 		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
@@ -68,6 +71,16 @@ public class Main {
 		generator.generate(resource, fileAccess, context);
 
 		System.out.println("Code generation finished.");
+	}
+	
+	public static String getFileContent() throws FileNotFoundException {
+		File translation = new File("translation.logic");
+		Scanner s = new Scanner(translation);
+		String result = "";
+		while (s.hasNextLine()) {
+			result = result + "\n"+ s.nextLine();
+		}
+		return result;
 	}
 	
 }

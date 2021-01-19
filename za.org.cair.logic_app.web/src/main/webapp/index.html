@@ -34,10 +34,11 @@
 			console.log("function being triggered.");
 			let req = new XMLHttpRequest();
 			console.log("request created");
-			req.open( "POST", "http://localhost:8003/translate", true);
+			req.open( "POST", "http://localhost:8003/translate", false);
 			var text = ace.edit('xtext-editor').getSession().getValue();
 			req.send(text);
 			console.log(req.responseText);
+			document.getElementById("resultTag").innerHTML = req.responseText;
 			}
 	</script>
 </head>
@@ -50,10 +51,13 @@
 		<div id="xtext-editor" data-editor-xtext-lang="logic"></div>
 	</div>
 </div>
-<form onsubmit = "return false">
+<form onsubmit = "return false" style="position: absolute; right: 0;">
+<label for="myfile">Select a file</label>
+<input type="file" id="myfile"></input>
 <button onClick="translateLogic()"> Compile </button>
 <button class="save-button" onclick="console.log(ace.edit('xtext-editor').getSession().getValue());"> Test </button>
 </form>
+<h3 id="resultTag" style="position: absolute; right: 0;"></h3>
 </body>
 </html>
 

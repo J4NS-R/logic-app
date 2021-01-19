@@ -1,0 +1,2 @@
+prop (a implies b)
+prop (b implies c)
