@@ -13,7 +13,6 @@ import za.org.cair.logic_app.logicLang.Equivalence
 import za.org.cair.logic_app.logicLang.Implication
 import za.org.cair.logic_app.logicLang.Disjunction
 import za.org.cair.logic_app.logicLang.Conjunction
-import za.org.cair.logic_app.services.LogicLangGrammarAccess.PrimaryElements
 
 class VariantTranslator {
 	
@@ -79,7 +78,7 @@ class VariantTranslator {
 
 		if (sent instanceof za.org.cair.logic_app.logicLang.Boolean){ // terminal
 			if (sent instanceof BooleanLiteral){
-				outStr.append(strTruth((sent as BooleanLiteral).truth))
+				outStr.append(strTruth(sent.truth))
 			} else { // variable
 				outStr.append((sent as BooleanVariable).name)
 			}

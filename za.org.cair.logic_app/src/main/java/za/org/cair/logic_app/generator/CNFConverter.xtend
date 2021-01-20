@@ -3,8 +3,6 @@ package za.org.cair.logic_app.generator
 import org.eclipse.emf.ecore.resource.Resource
 import za.org.cair.logic_app.logicLang.Proposition
 import za.org.cair.logic_app.logicLang.Sentence
-import za.org.cair.logic_app.logicLang.BooleanLiteral
-import za.org.cair.logic_app.logicLang.BooleanVariable
 import za.org.cair.logic_app.logicLang.Conjunction
 import za.org.cair.logic_app.logicLang.Disjunction
 import za.org.cair.logic_app.logicLang.Negation
@@ -14,8 +12,6 @@ import za.org.cair.logic_app.logicLang.impl.NegationImpl
 import za.org.cair.logic_app.logicLang.impl.DisjunctionImpl
 import za.org.cair.logic_app.logicLang.impl.ConjunctionImpl
 import za.org.cair.logic_app.LogicLangHelper
-import za.org.cair.logic_app.logicLang.Command
-import za.org.cair.logic_app.logicLang.impl.CommandImpl
 import za.org.cair.logic_app.logicLang.impl.VariantTranslationCommandImpl
 import za.org.cair.logic_app.logicLang.LogicLangVariant
 
@@ -47,7 +43,8 @@ class CNFConverter {
 		// A set of props is basically a bunch of conjuctions.
 		// So converting each to CNF is equivalent to converting the entire thing to CNF.
 		res.allContents.filter(Proposition).forEach [ prop |
-			val sent = convertSentenceToCNF(prop.sentence)
+			var sent = convertSentenceToNNF(prop.sentence) // convert to NNF
+			sent = convertSentenceToCNF(sent) // then convert to CNF
 			outStr.append("prop ")
 				.append(stringifier.expressionToString(sent))
 				.append("\n")
@@ -76,14 +73,19 @@ class CNFConverter {
 	
 	/**
 	 * Converts a sentence to CNF. I.e. makes it a bunch of conjunctions of disjunctions
-	 * Works by recursively  
+	 * Note: sent must already be in NNF for this to work. 
+	 * Works recursively
 	 */
 	def private Sentence convertSentenceToCNF(Sentence sent){
-		if (LogicLangHelper.isAtomic(sent)){
-			// nothing to do
+		if (LogicLangHelper.isTerminal(sent) || sent instanceof Negation){
+			// nothing to do. Negation is guaranteed to be attached to terminal
 			return sent
 		}else if (sent instanceof Conjunction){
-			//todo
+			// convert insides and returns
+			sent.left = convertSentenceToCNF(sent.left)
+			sent.right = convertSentenceToCNF(sent.right)
+			return sent
+			
 		}else if (sent instanceof Disjunction){
 			val leftSide = sent.left
 			val rightSide = sent.right
@@ -96,6 +98,7 @@ class CNFConverter {
 					newDisjunction(leftSide, Q),
 					newDisjunction(leftSide, R)
 				))
+
 			}else if (leftSide instanceof Conjunction){ // (P & R) | rs
 				val P = leftSide.left
 				val R = leftSide.right
@@ -104,50 +107,46 @@ class CNFConverter {
 					newDisjunction(P, rightSide),
 					newDisjunction(R, rightSide)
 				))
-			}else if (LogicLangHelper.isAtomic(leftSide)){
-				// todo
 				
-			}else{ // something else
-				// convert insides and runs again
+			}else{ // disjuncts are either terminals or disjunctions themselves
+				// convert insides and returns
 				sent.left = convertSentenceToCNF(sent.left)
 				sent.right = convertSentenceToCNF(sent.right)
-				return convertSentenceToCNF(sent)
+				return sent
 			}
 			
-		}else{ // shouldn't happen
-			throw new IllegalArgumentException("Could not convert sentence: " + sent);
+		}else{ // shouldn't happen if sent is NNF
+			throw new IllegalArgumentException("Sentence not in NNF: " + sent);
 		}
 	}
 	
 	/**
-	 * Converts a sentence to Negation Normal Form. I.e. only &'s, |'s, and ~'s (on atoms). 
+	 * Converts a sentence to Negation Normal Form. I.e. only &'s, |'s, and ~'s (on terminals). 
 	 * Requirement for CNF conversion.
 	 */
 	def private Sentence convertSentenceToNNF(Sentence sent){
 		if (sent instanceof Negation){
-			val expr = (sent as Negation).expression
+			val expr = sent.expression
 			// 4 cases:
-			if (LogicLangHelper.isAtomic(expr)){ // ~P
+			if (LogicLangHelper.isTerminal(expr)){ // ~P
 				return sent // nothing to change
 				
 			}else if (expr instanceof Negation){ // ~(~P)
 				// return inner P only
-				return convertSentenceToNNF((expr as Negation).expression) 
+				return convertSentenceToNNF(expr.expression) 
 				
 			}else if (expr instanceof Conjunction){ // ~(P & Q)
-				val conjSent = expr as Conjunction
 				// return (~P | ~Q) - de Morgan's Law
 				return convertSentenceToNNF(newDisjunction(
-					newNegation(conjSent.left), 
-					newNegation(conjSent.right)
+					newNegation(expr.left), 
+					newNegation(expr.right)
 				))
 				
 			}else if (expr instanceof Disjunction){ // ~(P | Q)
-				val disjSent = expr as Disjunction
 				// return (~P & ~Q) - de Morgan's Law
 				return convertSentenceToNNF(newConjunction(
-					newNegation(disjSent.left), 
-					newNegation(disjSent.right)
+					newNegation(expr.left), 
+					newNegation(expr.right)
 				))
 				
 			}else{ // equivalence or implication

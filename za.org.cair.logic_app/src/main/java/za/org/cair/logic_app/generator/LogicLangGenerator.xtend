@@ -4,8 +4,6 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.eclipse.xtext.naming.IQualifiedNameProvider
-import com.google.inject.Inject
 import za.org.cair.logic_app.logicLang.Command
 import za.org.cair.logic_app.logicLang.JustParseCommand
 import za.org.cair.logic_app.logicLang.VariantTranslationCommand
@@ -31,7 +29,7 @@ class LogicLangGenerator extends AbstractGenerator {
 				
 			}else if (cmd instanceof ConversionCommand){
 				// switch statement in xtend is for expressions, not statements
-				val dest = (cmd as ConversionCommand).destination
+				val dest = cmd.destination
 				if (dest == ConversionDestination.CNF) {
 					val converted = new CNFConverter().convertToCNF(resource)
 					fsa.generateFile("converted.logic", converted)

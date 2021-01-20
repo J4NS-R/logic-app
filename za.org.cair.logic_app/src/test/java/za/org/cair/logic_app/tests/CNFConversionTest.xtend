@@ -26,4 +26,18 @@ class CNFConversionTest {
 		''')
 		
 	}
+	
+	@Test
+	def testCNF(){
+		// convert to Conjunctive Normal Form
+		'''
+		prop ~(P & ~Q) -> R
+		prop A & (B | (D & E))
+		cmd convert to CNF
+		'''.assertCompilesTo('''
+		prop ((P | R) & (~Q | R))
+		prop (A & ((B | D) & (B | E)))
+		''')
+		
+	}
 }

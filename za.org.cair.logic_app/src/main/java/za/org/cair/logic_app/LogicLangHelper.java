@@ -41,7 +41,7 @@ public class LogicLangHelper {
 	 * @param sent The sentence
 	 * @return whether atomic
 	 */
-	public static boolean isAtomic(Sentence sent) {
+	public static boolean isTerminal(Sentence sent) {
 		return sent instanceof BooleanLiteral ||
 				sent instanceof BooleanVariable;
 	}
