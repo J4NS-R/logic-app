@@ -74,7 +74,7 @@ class VariantTranslator {
 	}
 	
 	// TODO: don't add brackets if top level sentence
-	def private String expressionToString(Sentence sent){
+	def String expressionToString(Sentence sent){
 		val outStr = new StringBuilder
 
 		if (sent instanceof za.org.cair.logic_app.logicLang.Boolean){ // terminal

@@ -93,6 +93,7 @@ VariantTranslationCommand:
 
 enum ConversionDestination:
 	CNF = 'CNF' |
+	NNF = 'NNF' |
 	DIMACS_CNF = 'DIMACS CNF'
 ;
 ConversionCommand:

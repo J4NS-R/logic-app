@@ -33,8 +33,12 @@ class LogicLangGenerator extends AbstractGenerator {
 				// switch statement in xtend is for expressions, not statements
 				val dest = (cmd as ConversionCommand).destination
 				if (dest == ConversionDestination.CNF) {
-					val converted = CNFConverter.convertToCNF(resource)
-					fsa.generateFile("converted.txt", converted)
+					val converted = new CNFConverter().convertToCNF(resource)
+					fsa.generateFile("converted.logic", converted)
+					
+				}else if (dest == ConversionDestination.NNF){
+					val converted = new CNFConverter().convertToNNF(resource)
+					fsa.generateFile("converted.logic", converted)
 					
 				}else if (dest == ConversionDestination.DIMACS_CNF) {
 					// todo
