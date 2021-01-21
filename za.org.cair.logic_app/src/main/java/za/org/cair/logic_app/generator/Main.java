@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.GeneratorDelegate;
+import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
@@ -42,6 +43,9 @@ public class Main {
 
 	@Inject 
 	private JavaIoFileSystemAccess fileAccess;
+	
+	@Inject
+	private InMemoryFileSystemAccess memFileSystem;
 
 	protected void runGenerator(String string) {
 		// Load the resource
@@ -64,5 +68,24 @@ public class Main {
 		generator.generate(resource, fileAccess, context);
 
 		System.out.println("Code generation finished.");
+	}
+	
+	public static String generateToStringFromFile(String inputFilePath) {
+		Injector injector = new LogicLangStandaloneSetup().createInjectorAndDoEMFRegistration();
+		Main main = injector.getInstance(Main.class);
+		return main.internalGenerateToString(inputFilePath);
+	}
+	
+	private String internalGenerateToString(String inputFilePath) {
+		// Load the resource
+		ResourceSet set = resourceSetProvider.get();
+		Resource resource = set.getResource(URI.createFileURI(inputFilePath), true);
+		
+		// Generate!
+		generator.generate(resource, memFileSystem, new GeneratorContext());
+		// At this stage, we only expect to generate one file per input file.
+		String result = memFileSystem.getTextFiles().entrySet()
+				.iterator().next().getValue()+"";
+		return result;
 	}
 }
