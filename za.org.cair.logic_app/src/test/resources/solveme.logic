@@ -1,0 +1,7 @@
+# solve this
+prop A -> B
+prop B -> C
+prop ~C
+
+cmd solve satisfiability
+config solver="sat4j"

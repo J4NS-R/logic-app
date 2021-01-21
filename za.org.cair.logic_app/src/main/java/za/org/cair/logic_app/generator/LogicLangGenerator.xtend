@@ -9,6 +9,12 @@ import za.org.cair.logic_app.logicLang.JustParseCommand
 import za.org.cair.logic_app.logicLang.VariantTranslationCommand
 import za.org.cair.logic_app.logicLang.ConversionCommand
 import za.org.cair.logic_app.logicLang.ConversionDestination
+import za.org.cair.logic_app.logicLang.SolveCommand
+import za.org.cair.logic_app.logicLang.SolutionRequest
+import za.org.cair.logic_app.external.SATSolver
+import za.org.cair.logic_app.logicLang.ConfigKey
+import za.org.cair.logic_app.logicLang.Config
+import za.org.cair.logic_app.logicLang.Model
 
 /**
  * Generates code from your model files on save.
@@ -40,10 +46,21 @@ class LogicLangGenerator extends AbstractGenerator {
 					
 				}else if (dest == ConversionDestination.DIMACS_CNF) {
 					val dimacs = new CNFConverter().convertToDIMACS(resource)
-					fsa.generateFile("dimacs.txt", dimacs)
+					fsa.generateFile("dimacs.cnf", dimacs)
 					
 				}else{
 					System.err.println("Error in compilation: unsupported conversion destination")
+				}
+				
+			}else if (cmd instanceof SolveCommand){
+				val what = cmd.what
+				if (what == SolutionRequest.SATISFIABILITY){
+					val solver = new SATSolver(getConfig(ConfigKey.SOLVER, resource))
+					solver.solve(resource.allContents.filter(Model).next.propositions)
+					fsa.generateFile("result.txt", solver.prettyPrint)
+					
+				}else{
+					System.err.println("Error in compilation: unsupported solution request")
 				}
 				
 			}else{
@@ -53,5 +70,21 @@ class LogicLangGenerator extends AbstractGenerator {
 			}
 		]
 		
+	}
+	
+	/**
+	 * Gets the a configuration from the model.
+	 * Returns null if not found
+	 */
+	def private String getConfig(ConfigKey key, Resource res){
+		val iter = res.allContents.filter(Config)
+		while (iter.hasNext){
+			val cfg = iter.next
+			if (cfg.key == key){
+				return cfg.value
+			}
+		}	
+		
+		return null
 	}
 }
