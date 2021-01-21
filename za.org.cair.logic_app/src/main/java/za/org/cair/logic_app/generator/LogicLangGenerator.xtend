@@ -39,7 +39,9 @@ class LogicLangGenerator extends AbstractGenerator {
 					fsa.generateFile("converted.logic", converted)
 					
 				}else if (dest == ConversionDestination.DIMACS_CNF) {
-					// todo
+					val dimacs = new CNFConverter().convertToDIMACS(resource)
+					fsa.generateFile("dimacs.txt", dimacs)
+					
 				}else{
 					System.err.println("Error in compilation: unsupported conversion destination")
 				}

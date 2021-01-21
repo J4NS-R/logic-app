@@ -1,19 +1,26 @@
 package za.org.cair.logic_app.generator
 
+import java.util.LinkedList
+import java.util.List
 import org.eclipse.emf.ecore.resource.Resource
-import za.org.cair.logic_app.logicLang.Proposition
-import za.org.cair.logic_app.logicLang.Sentence
+import za.org.cair.logic_app.LogicLangHelper
 import za.org.cair.logic_app.logicLang.Conjunction
 import za.org.cair.logic_app.logicLang.Disjunction
-import za.org.cair.logic_app.logicLang.Negation
-import za.org.cair.logic_app.logicLang.Implication
 import za.org.cair.logic_app.logicLang.Equivalence
-import za.org.cair.logic_app.logicLang.impl.NegationImpl
-import za.org.cair.logic_app.logicLang.impl.DisjunctionImpl
-import za.org.cair.logic_app.logicLang.impl.ConjunctionImpl
-import za.org.cair.logic_app.LogicLangHelper
-import za.org.cair.logic_app.logicLang.impl.VariantTranslationCommandImpl
+import za.org.cair.logic_app.logicLang.Implication
 import za.org.cair.logic_app.logicLang.LogicLangVariant
+import za.org.cair.logic_app.logicLang.Model
+import za.org.cair.logic_app.logicLang.Negation
+import za.org.cair.logic_app.logicLang.Proposition
+import za.org.cair.logic_app.logicLang.Sentence
+import za.org.cair.logic_app.logicLang.impl.ConjunctionImpl
+import za.org.cair.logic_app.logicLang.impl.DisjunctionImpl
+import za.org.cair.logic_app.logicLang.impl.NegationImpl
+import za.org.cair.logic_app.logicLang.impl.VariantTranslationCommandImpl
+import za.org.cair.logic_app.logicLang.BooleanVariable
+import za.org.cair.logic_app.logicLang.BooleanLiteral
+import za.org.cair.logic_app.logicLang.BooleanValuesEnum
+import java.util.HashMap
 
 class CNFConverter {
 	
@@ -32,7 +39,7 @@ class CNFConverter {
 	}
 	
 	/**
-	 * Converts a set of propositions to Conunctive Normal Form,
+	 * Converts a set of propositions to Conjunctive Normal Form,
 	 * in the same format accepted by this program. 
 	 * Note that this is a simple per-proposition conversion.
 	 * Also note that T and F literals will be treated as variables and not be simplified
@@ -69,6 +76,122 @@ class CNFConverter {
 		]
 		
 		return outStr.toString()
+	}
+	
+	/**
+	 * Converts model to DIMACS-compliant SAT input format.
+	 * https://jix.github.io/varisat/manual/0.2.0/formats/dimacs.html
+	 */
+	def String convertToDIMACS(Resource res){
+		val outStr = new StringBuilder();
+		// DIMACS comment
+		outStr.append("c Generated from .logic input file\n")
+		
+		// General strategy: convert all props to one big conjunctive sentence
+		// convert it to CNF, split by Conjunction, and build DIMACS clauses
+		
+		// get props-iterator from props from model from EMF resource
+		val iter = res.allContents.filter(Model).next.propositions.iterator
+		var bigSentence = iter.next.sentence // first prop
+		while (iter.hasNext){ // conjoin all props
+			bigSentence = newConjunction(
+				bigSentence,
+				iter.next.sentence
+			)
+		}
+		
+		// convert everything to CNF prop
+		bigSentence = convertSentenceToNNF(bigSentence)
+		bigSentence = convertSentenceToCNF(bigSentence)
+		
+		// get clauses from tree by splitting on conj's
+		val clauses = splitByConjunction(bigSentence)
+		
+		// create body and term-ID mapping
+		val termMapping = new HashMap<String, Integer>
+		val body = new StringBuilder();
+		clauses.forEach[ clause |
+			// for each terminal in the clause:
+			getTerminals(clause).forEach[ term |
+				// get or create ID
+				val termID = termMapping.computeIfAbsent(term.key, [k |
+					return termMapping.size + 1 // so first entry starts at ID 1
+				])
+				// push to body
+				if (!term.value){ // the pair "value" indicates whether negated
+					body.append("-")
+				}
+				body.append(termID).append(" ")
+			]
+			// end clause (and line)
+			body.append("0\n")
+		]
+		
+		// print out term-ID mapping
+		outStr.append("c Terminals by ID:\n")
+		termMapping.entrySet.sortBy[entry | entry.value].forEach[ entry |
+			outStr.append(String.format("c %d=%s\n", entry.value, entry.key))
+		]
+		
+		// DIMACS header
+		outStr.append(String.format("p cnf %d %d\n", termMapping.size, clauses.length))
+		
+		// add generated body
+		outStr.append(body)
+		
+		return outStr.toString()
+	}
+	
+	/**
+	 * Splits a sentence into a list of sub-sentences with delimiter being conjunctions.
+	 * Like String.split(), but on a logic tree instead.
+	 * Note: expects CNF.
+	 */
+	def private List<Sentence> splitByConjunction(Sentence sent){
+		
+		// General strategy: DFS-left, making a list of non-conj children on Conjunctions
+		
+		if (sent instanceof Conjunction){
+			val leftList = splitByConjunction(sent.left)
+			val rightList = splitByConjunction(sent.right)
+			
+			return joinLists(leftList, rightList)
+			
+		}else{
+			// because of CNF, hitting a non-Conjunction means there are no further
+			// conjunctions down this path.
+			return List.of(sent) // return itself
+		}
+		
+	}
+	
+	/**
+	 * From a CNF sentence, gets an ordered list of terminals.
+	 * List will contain duplicates if a variable/booleanLiteral appears more than once.
+	 * @returns The list of terminal names and a boolean each, indicating whether negated (false=negated)
+	 */
+	def private List<Pair<String, Boolean>> getTerminals(Sentence sent){
+		if (LogicLangHelper.isComplexSentence(sent)){
+			val leftList = getTerminals(LogicLangHelper.getLeftSide(sent))
+			val rightList = getTerminals(LogicLangHelper.getRightSide(sent))
+			
+			return joinLists(leftList, rightList)
+			
+		}else if (sent instanceof Negation){
+			// because of CNF, negation is guaranteed to be attached to a terminal
+			val innerTermName = getTerminals(sent.expression).get(0).key
+			return List.of(Pair.of(innerTermName, false))
+			
+		}else if (sent instanceof BooleanVariable){
+			return List.of(Pair.of(sent.name, true))
+			
+		}else if (sent instanceof BooleanLiteral){
+			// "T" or "F"
+			val boolStr = VariantTranslator.VAR_SYMBOL_BOOLS.get(sent.truth == BooleanValuesEnum.TRUE)
+			// We're going with distinct T and F instead of T and ~T because the former
+			// maps better to user input.
+			return List.of(Pair.of(boolStr, true))
+		}
 	}
 	
 	/**
@@ -210,5 +333,12 @@ class CNFConverter {
 		return conj
 	}
 	// =====
+	
+	// Creates a new list containing the elements of the two arguments, in order.
+	def private static <E> List<E> joinLists(List<E> listLeft, List<E> listRight){
+		val list = new LinkedList<E>(listLeft);
+		list.addAll(listRight)
+		return list
+	}
 	
 }
