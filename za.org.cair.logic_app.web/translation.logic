@@ -1,2 +1,3 @@
-prop (a implies b)
-prop (b implies c)
+prop (A implies B)
+prop (C implies D)
+prop (E implies False)

@@ -1,0 +1,4 @@
+prop A -> B
+prop C -> D
+prop E -> F
+cmd translate to reserved word variant
