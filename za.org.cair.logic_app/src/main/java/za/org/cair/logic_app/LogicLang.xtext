@@ -27,27 +27,29 @@ Sentence:
 // they produce AST's and not datatypes.
 // Note where the precedence is the same, these rules are left-associative 
 
+// The `operator` attribute is only used for checking variant type, not
+// determining the operation.
 
 Equivalence returns Sentence:
-	Implication ({Equivalence.left=current} ('<->' | 'iff') right=Implication)*
+	Implication ({Equivalence.left=current} operator=('<->' | 'iff') right=Implication)*
 ;
 
 Implication returns Sentence:
-	Disjunction ({Implication.left=current} ('->' | 'implies') right=Disjunction)*
+	Disjunction ({Implication.left=current} operator=('->' | 'implies') right=Disjunction)*
 ;
 
 Disjunction returns Sentence:
-	Conjunction ({Disjunction.left=current} ('|' | 'or') right=Conjunction)*
+	Conjunction ({Disjunction.left=current} operator=('|' | 'or') right=Conjunction)*
 ;
 
 Conjunction returns Sentence:
-	Primary ({Conjunction.left=current} ('&' | 'and') right=Primary)*
+	Primary ({Conjunction.left=current} operator=('&' | 'and') right=Primary)*
 ;
 
 Primary returns Sentence: 
 // either terminal, negation, or restart the delegation chain
 	Boolean |
-	({Negation} ('~' | 'not') expression=Primary) |
+	({Negation} operator=('~' | 'not') expression=Primary) |
 	'(' Equivalence ')'
 ;
 
