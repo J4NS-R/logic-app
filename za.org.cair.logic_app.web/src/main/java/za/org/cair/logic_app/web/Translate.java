@@ -34,12 +34,7 @@ public class Translate extends HttpServlet {
 		FileWriter fileWriter = new FileWriter("inputFile.logic");
 		fileWriter.write(input);
 		fileWriter.close();
-		za.org.cair.logic_app.generator.Main m = new za.org.cair.logic_app.generator.Main();
-		String[] inputToGenerator = new String[1];
-		inputToGenerator[0] = "inputFile.logic";
-		Main.main(inputToGenerator);
-        
-        response.getWriter().print(Main.getFileContent());
+        response.getWriter().print(Main.generateToStringFromFile("inputFile.logic"));
     }
     
 }
