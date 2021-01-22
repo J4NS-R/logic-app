@@ -6,3 +6,5 @@ src/test/x*-gen/
 
 target/
 
+sat4j.jar
+

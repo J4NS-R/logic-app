@@ -1,0 +1,5 @@
+Satisfiable
+A=True
+B=True
+C=False
+D=True

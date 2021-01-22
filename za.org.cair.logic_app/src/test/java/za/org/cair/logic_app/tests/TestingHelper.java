@@ -14,6 +14,7 @@ class TestingHelper {
 	
 	// I know the default xtext libs have a similar assertion, but
 	// this is much simpler
+	// TODO may not be necessary
 	public static void assertWarning(Model model, String code){
 		EList<Diagnostic> warns = model.eResource().getWarnings();
 		System.out.println("warns: " + warns.size());

@@ -1,0 +1,7 @@
+# This is consistent
+prop A -> (~B | D)
+prop B | C
+prop ~(A -> C)
+
+cmd solve satisfiability
+

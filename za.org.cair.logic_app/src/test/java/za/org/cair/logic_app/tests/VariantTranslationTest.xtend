@@ -6,17 +6,12 @@ import org.eclipse.xtext.testing.InjectWith
 import javax.inject.Inject
 import org.junit.jupiter.api.Test
 import org.eclipse.xtext.xbase.testing.CompilationTestHelper
-import org.eclipse.xtext.testing.util.ParseHelper
-import za.org.cair.logic_app.logicLang.Model
-import org.eclipse.xtext.testing.validation.ValidationTestHelper
 
 @ExtendWith(InjectionExtension)
 @InjectWith(LogicLangInjectorProvider)
 class VariantTranslationTest {
 	
 	@Inject extension CompilationTestHelper
-	@Inject ParseHelper<Model> parseHelper
-	@Inject ValidationTestHelper validationHelper
 	
 	@Test
 	def testResWordVar(){
