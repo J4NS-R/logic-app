@@ -1,4 +1,7 @@
-prop A -> B
-prop C -> D
-prop E -> F
-cmd translate to reserved word variant
+# these props are inconsistent
+prop A | (B -> C)
+prop ~C & B
+prop (D | F) -> ~A
+
+cmd solve satisfiability
+config solver="sat4j"

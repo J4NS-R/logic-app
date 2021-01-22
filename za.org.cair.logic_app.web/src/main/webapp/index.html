@@ -49,7 +49,9 @@
 			var text = ace.edit('xtext-editor').getSession().getValue();
 			req.send(text);
 			console.log(req.responseText);
-			document.getElementById("resultTag").innerHTML = req.responseText;
+			var result = req.responseText;
+			result = result.replace(/\n/g, "<br />");
+			document.getElementById("resultTag").innerHTML = result;
 			}
 		
 		async function readTheFile() {
@@ -77,6 +79,7 @@
   			element.click();
   			document.body.removeChild(element);
 		}
+		
 	</script>
 <form onsubmit = "return false" style="position: absolute; right: 0;">
 	<label for="myfile">Select a file</label>
