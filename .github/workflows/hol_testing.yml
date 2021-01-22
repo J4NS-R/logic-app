@@ -3,7 +3,10 @@
 
 name: Test HOL reasoner integration
 
-on: [push, pull_request]
+on:
+  workflow_run:
+    workflows: [cli_generator.yml]
+    types: [completed]
 
 jobs:
   sat4j:
