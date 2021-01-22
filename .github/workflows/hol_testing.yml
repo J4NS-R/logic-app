@@ -5,8 +5,9 @@ name: Test HOL reasoner integration
 
 on:
   workflow_run:
-    workflows: [cli_generator.yml]
-    types: [completed]
+    workflows: ["Test HOL reasoner integration"]
+    types:
+      - completed
 
 jobs:
   sat4j:
