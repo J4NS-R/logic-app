@@ -8,9 +8,9 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import za.org.cair.logic_app.logicLang.Model
 import static org.junit.Assert.assertNotNull
 import org.junit.jupiter.api.Test
-import org.eclipse.xtext.testing.validation.ValidationTestHelper
-import za.org.cair.logic_app.logicLang.LogicLangPackage
-import za.org.cair.logic_app.validation.LogicLangValidator
+//import org.eclipse.xtext.testing.validation.ValidationTestHelper
+//import za.org.cair.logic_app.logicLang.LogicLangPackage
+//import za.org.cair.logic_app.validation.LogicLangValidator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(LogicLangInjectorProvider)
@@ -19,8 +19,8 @@ class CommandsTest {
 	@Inject
 	ParseHelper<Model> parseHelper
 	
-	@Inject
-	ValidationTestHelper validationHelper
+//	@Inject
+//	ValidationTestHelper validationHelper
 	
 	@Test
 	def void testNoCommands() {

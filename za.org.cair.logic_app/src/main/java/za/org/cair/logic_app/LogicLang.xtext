@@ -77,6 +77,7 @@ enum BooleanValuesEnum:
 Command:
 	'cmd' (
 		VariantTranslationCommand |
+		ConversionCommand |
 		JustParseCommand
 		// TODO: other commands go here
 	) 
@@ -88,6 +89,15 @@ enum LogicLangVariant:
 ;
 VariantTranslationCommand:
 	'translate' 'to' variant=LogicLangVariant
+;
+
+enum ConversionDestination:
+	CNF = 'CNF' |
+	NNF = 'NNF' |
+	DIMACS_CNF = 'DIMACS CNF'
+;
+ConversionCommand:
+	'convert' 'to' destination=ConversionDestination
 ;
 
 JustParseCommand:
