@@ -83,6 +83,13 @@ class CNFConverter {
 	 * https://jix.github.io/varisat/manual/0.2.0/formats/dimacs.html
 	 */
 	def String convertToDIMACS(Resource res){
+		return convertToDIMACS(res.allContents.filter(Model).next.propositions)
+	} 
+	 
+	/**
+	 * DIMACS format converter
+	 */ 
+	def String convertToDIMACS(List<Proposition> props){
 		val outStr = new StringBuilder();
 		// DIMACS comment
 		outStr.append("c Generated from .logic input file\n")
@@ -91,7 +98,7 @@ class CNFConverter {
 		// convert it to CNF, split by Conjunction, and build DIMACS clauses
 		
 		// get props-iterator from props from model from EMF resource
-		val iter = res.allContents.filter(Model).next.propositions.iterator
+		val iter = props.iterator
 		var bigSentence = iter.next.sentence // first prop
 		while (iter.hasNext){ // conjoin all props
 			bigSentence = newConjunction(

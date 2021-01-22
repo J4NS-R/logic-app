@@ -6,7 +6,8 @@ generate logicLang "http://www.cair.org.za/logic_app/LogicLang"
 Model hidden(WS, COMMENT): // own-line comments
 	// & used to mean any ordering
 	propositions+=Proposition* &
-	commands+=Command*
+	commands+=Command* &
+	config+=Config*
 ;
 
 
@@ -74,12 +75,13 @@ enum BooleanValuesEnum:
 
 
 // Commands =====
-Command:
+Command hidden(WS, COMMENT): // hidden() used to specify comments
 	'cmd' (
 		VariantTranslationCommand |
 		ConversionCommand |
+		SolveCommand |
 		JustParseCommand
-		// TODO: other commands go here
+		// other commands go here
 	) 
 ;
 
@@ -100,8 +102,25 @@ ConversionCommand:
 	'convert' 'to' destination=ConversionDestination
 ;
 
+enum SolutionRequest:
+	SATISFIABILITY = 'satisfiability'
+;
+SolveCommand:
+	'solve' what=SolutionRequest
+;
+
 JustParseCommand:
 	{JustParseCommand} 'just' 'parse'
+;
+
+// Configuration ===
+enum ConfigKey:
+	SOLVER = 'solver'
+	// add more config keys here
+	// TODO: perhaps output filename
+;
+Config hidden(WS, COMMENT):
+	'config' key=ConfigKey '=' value=STRING
 ;
 
 
