@@ -1,0 +1,7 @@
+prop ~(A <-> B) & var3
+prop var3 & (foo -> ~bar)
+prop bar | (~bar & ~B)
+
+cmd convert to NNF
+cmd convert to CNF
+cmd convert to DIMACS CNF

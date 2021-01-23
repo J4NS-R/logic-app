@@ -26,6 +26,7 @@ class LogicLangGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		
 		// run through all specified commands and do things for each
+		// each cmd will output a unique file to help with multi-command runs.
 		resource.allContents.filter(Command).forEach [ cmd |
 			if (cmd instanceof JustParseCommand){
 				// do nothing
@@ -38,11 +39,11 @@ class LogicLangGenerator extends AbstractGenerator {
 				val dest = cmd.destination
 				if (dest == ConversionDestination.CNF) {
 					val converted = new CNFConverter().convertToCNF(resource)
-					fsa.generateFile("converted.logic", converted)
+					fsa.generateFile("convertedf-cnf.logic", converted)
 					
 				}else if (dest == ConversionDestination.NNF){
 					val converted = new CNFConverter().convertToNNF(resource)
-					fsa.generateFile("converted.logic", converted)
+					fsa.generateFile("converted-nnf.logic", converted)
 					
 				}else if (dest == ConversionDestination.DIMACS_CNF) {
 					val dimacs = new CNFConverter().convertToDIMACS(resource)
