@@ -32,7 +32,7 @@
             <zipfileset dir="/home/runner/.m2/repository/org/eclipse/xtext/org.eclipse.xtext.xbase/2.24.0" includes="org.eclipse.xtext.xbase-2.24.0.jar"/>
             <zipfileset dir="/home/runner/.m2/repository/org/eclipse/xtext/org.eclipse.xtext.common.types/2.24.0" includes="org.eclipse.xtext.common.types-2.24.0.jar"/>
             <zipfileset dir="/home/runner/.m2/repository/io/github/classgraph/classgraph/4.8.35" includes="classgraph-4.8.35.jar"/>
-            <fileset dir="/home/jans/Projects/logic-app/za.org.cair.logic_app.ide/target/classes"/>
+	    <fileset dir="../../za.org.cair.logic_app.ide/target/classes"/>
             <zipfileset dir="/home/runner/.m2/repository/org/eclipse/xtext/org.eclipse.xtext.ide/2.24.0" includes="org.eclipse.xtext.ide-2.24.0.jar"/>
             <zipfileset dir="/home/runner/.m2/repository/org/eclipse/emf/org.eclipse.emf.ecore.change/2.14.0" includes="org.eclipse.emf.ecore.change-2.14.0.jar"/>
             <zipfileset dir="/home/runner/.m2/repository/org/eclipse/lsp4j/org.eclipse.lsp4j/0.10.0" includes="org.eclipse.lsp4j-0.10.0.jar"/>
