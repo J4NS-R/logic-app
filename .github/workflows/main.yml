@@ -114,10 +114,9 @@ jobs:
       with:
         java-version: 1.11
     - name: Download compiler
-      uses: dawidd6/action-download-artifact@v2
+      uses: actions/download-artifact@v2
       with:
-        workflow: cli_generator.yml
-        name: logic-compiler.jar  # artifact name
+        name: logic-compiler
         path: ./
     - name: Get sat4j
       run: wget http://download.forge.ow2.org/sat4j/sat4j-pb.jar -O sat4j.jar
