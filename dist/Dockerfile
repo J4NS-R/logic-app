@@ -6,7 +6,8 @@ COPY logic-compiler/logic-compiler.jar ./
 RUN wget http://download.forge.ow2.org/sat4j/sat4j-pb.jar -O sat4j.jar
 
 # webserver and public dir
-COPY logic-webserver/* ./
+COPY logic-webserver/logic-webserver.jar ./
+COPY logic-webserver/src/ ./
 
-CMD java -jar logic-webserver.jar
+CMD java -jar logic-webserver.jar 8003
 
