@@ -11,7 +11,8 @@ on:
 
 jobs:
   sat4j:
-
+    # only runs if Deployment compilation a success
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} 
     runs-on: ubuntu-latest
 
     steps:

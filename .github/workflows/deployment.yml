@@ -37,7 +37,7 @@ jobs:
     - name: Store cli jar artifact
       uses: actions/upload-artifact@v1
       with:
-        name: logic-compiler.jar  # name of the artifact
+        name: logic-compiler  # name of the artifact
         path: dist/generator/logic-compiler.jar
 
   build-web:
@@ -81,7 +81,39 @@ jobs:
         name: logic-webserver  # name of the artifact
         path: dist/web/output
 
+  docker-web:
+    needs: [build-generator, build-web]
+    runs-on: ubuntu-latest
 
+    - name: Checkout
+      uses: actions/checkout@v2
 
+    - name: Pull in artifacts from build jobs
+      uses: actions/download-artifact@v2
+      with:
+        path: dist/
 
-      
+    - name: Docker login
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Build and push (dev)
+      if: github.ref != 'refs/heads/master'
+      uses: docker/build-push-action@v2
+      with:
+        context: dist/
+        file: ./Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_HUB_PATH }}:dev
+
+    - name: Build and push (master)
+      if: github.ref == 'refs/heads/master'
+      uses: docker/build-push-action@v2
+      with:
+        context: dist/
+        file: ./Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_HUB_PATH }}:latest ${{ secrets.DOCKER_HUB_PATH }}:stable
+
