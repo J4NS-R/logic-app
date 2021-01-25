@@ -1,11 +1,32 @@
 
-name: Deployment
+name: Main workflow
 
 on: [push, pull_request]
 
 jobs:
-  build-generator:
 
+  all-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }} # hash poms
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Compile and run all tests
+      run: mvn -B test
+
+
+  build-generator:
+    needs: all-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -41,6 +62,7 @@ jobs:
         path: dist/generator/logic-compiler.jar
 
   build-web:
+    needs: all-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -80,9 +102,46 @@ jobs:
       with:
         name: logic-webserver  # name of the artifact
         path: dist/web/output
+        
+  hol-integration-tests:
+    needs: build-generator
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+    - name: Download compiler
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: cli_generator.yml
+        name: logic-compiler.jar  # artifact name
+        path: ./
+    - name: Get sat4j
+      run: wget http://download.forge.ow2.org/sat4j/sat4j-pb.jar -O sat4j.jar
+    - name: Setup workspace 1
+      run: cp -r za.org.cair.logic_app/src/test/resources/sat ./
+    - name: Setup workspace 2
+      working-directory: ./sat
+      run: |
+        ls -1 *.logic | while read line; do
+          echo 'config solver="sat4j"' >> $line
+        done
+    - name: SAT4j part 1
+      run: java -jar logic-compiler.jar sat/problem_sat.logic
+    - name: Check for correct output 1
+      run: diff result.txt sat/solution_sat.txt  # will fail if diffs
+    - name: Quick cleanup
+      run: rm result.txt
+    - name: SAT4j part 2
+      run: java -jar logic-compiler.jar sat/problem_unsat.logic
+    - name: Check for correct output 2
+      run: diff result.txt sat/solution_unsat.txt
 
   docker-web:
-    needs: [build-generator, build-web]
+    needs: [hol-integration-tests, build-web]
     runs-on: ubuntu-latest
 
     steps:
@@ -101,7 +160,15 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Docker Buildx setup
+      id: buildx
       uses: docker/setup-buildx-action@v1
+
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: ${{ runner.os }}-buildx
 
     - name: Build and push (dev)
       if: github.ref != 'refs/heads/master'
@@ -109,14 +176,20 @@ jobs:
       with:
         context: ./dist/
         push: true
+        builder: ${{ steps.buildx.outputs.name }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
         tags: ${{ secrets.DOCKER_HUB_PATH }}:dev
 
-    - name: Build and push (master)
+    - name: Build and push (master only)
       if: github.ref == 'refs/heads/master'
       uses: docker/build-push-action@v2
       with:
-        context: dist/
-        file: ./Dockerfile
+        context: ./dist/
         push: true
+        builder: ${{ steps.buildx.outputs.name }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
         tags: ${{ secrets.DOCKER_HUB_PATH }}:latest ${{ secrets.DOCKER_HUB_PATH }}:stable
+
 
