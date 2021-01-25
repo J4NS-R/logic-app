@@ -1,7 +1,0 @@
-# these props are inconsistent
-prop A | (B -> C)
-prop ~C & B
-prop (D | F) -> ~A
-
-cmd solve satisfiability
-config solver="sat4j"

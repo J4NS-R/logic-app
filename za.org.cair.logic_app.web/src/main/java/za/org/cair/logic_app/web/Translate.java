@@ -35,6 +35,7 @@ public class Translate extends HttpServlet {
 		fileWriter.write(input);
 		fileWriter.close();
         response.getWriter().print(Main.generateToStringFromFile("inputFile.logic"));
+        inputFile.delete();
     }
     
 }
