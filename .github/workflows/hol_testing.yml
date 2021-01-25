@@ -5,7 +5,7 @@ name: Test HOL reasoner integration
 
 on:
   workflow_run:
-    workflows: ["Build CLI logic lang compiler"]
+    workflows: ["Deployment"]
     types:
       - completed
 
