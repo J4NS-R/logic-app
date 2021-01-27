@@ -92,7 +92,7 @@ public class VariantValidator extends AbstractDeclarativeValidator{
 			if (thisVariant != runningVariant.get())
 				warning("Inconsistent logic symbology", where, 
 						appropriateRef(where), 
-						LogicLangValidator.INCONSISTENT_SYMBOLOGY);
+						LogicLangValidator.ISSUE_INCONSISTENT_SYMBOLOGY);
 			// either case do nothing (continue checking)
 			
 		}else { // this is the first ever check: set this variant to the running variant

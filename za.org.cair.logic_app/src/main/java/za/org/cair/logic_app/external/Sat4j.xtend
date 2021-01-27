@@ -10,11 +10,11 @@ import java.io.BufferedWriter
 import java.util.HashMap
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import za.org.cair.logic_app.LogicLangHelper
 
 class Sat4j {
 	
 	val SAT4J_JAR = "sat4j.jar"
-	val DIMACS_FILE = "dimacs.cnf"
 	
 	List<Proposition> inputProps
 	
@@ -35,9 +35,11 @@ class Sat4j {
 	 */
 	def Pair<Boolean, Map<String, Boolean>> solve(){
 		
+		val dimacsFile = LogicLangHelper.randomHash(inputProps.hashCode())+".cnf";
+		
 		// create dimacs file
 		val dimacsContent = new CNFConverter().convertToDIMACS(inputProps)
-		val writer = new BufferedWriter(new FileWriter("dimacs.cnf"))
+		val writer = new BufferedWriter(new FileWriter(dimacsFile))
 		writer.write(dimacsContent)
 		writer.close()
 		
@@ -53,7 +55,7 @@ class Sat4j {
 		}
 		
 		// run sat4j
-		val proc = Runtime.runtime.exec("java -jar "+SAT4J_JAR+" "+DIMACS_FILE)
+		val proc = Runtime.runtime.exec("java -jar "+SAT4J_JAR+" "+dimacsFile)
 		if (proc.errorStream.read != -1){
 			throw new RuntimeException("Sat4j failed to solve.")
 		}
@@ -86,7 +88,7 @@ class Sat4j {
 		}
 		
 		// clean up
-		new File(DIMACS_FILE).delete()
+		new File(dimacsFile).delete()
 		
 		// finish
 		return Pair.of(satis, solution)

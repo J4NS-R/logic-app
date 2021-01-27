@@ -129,13 +129,13 @@ jobs:
           echo 'config solver="sat4j"' >> $line
         done
     - name: SAT4j part 1
-      run: java -jar logic-compiler.jar sat/problem_sat.logic
+      run: java -jar logic-compiler.jar sat/problem_sat.logic result.txt
     - name: Check for correct output 1
       run: diff result.txt sat/solution_sat.txt  # will fail if diffs
     - name: Quick cleanup
       run: rm result.txt
     - name: SAT4j part 2
-      run: java -jar logic-compiler.jar sat/problem_unsat.logic
+      run: java -jar logic-compiler.jar sat/problem_unsat.logic result.txt
     - name: Check for correct output 2
       run: diff result.txt sat/solution_unsat.txt
 

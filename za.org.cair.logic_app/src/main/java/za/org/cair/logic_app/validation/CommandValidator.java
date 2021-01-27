@@ -20,7 +20,7 @@ public class CommandValidator extends AbstractDeclarativeValidator {
 		if(model.getCommands().size() == 0) {
 			warning("No commands specified. Nothing to do.", 
 					LogicLangPackage.Literals.MODEL__COMMANDS, 
-					LogicLangValidator.NO_COMMANDS);
+					LogicLangValidator.ISSUE_NO_COMMANDS);
 		}
 	}
 	

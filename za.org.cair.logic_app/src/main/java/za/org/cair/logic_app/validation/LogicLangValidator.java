@@ -23,11 +23,13 @@ import za.org.cair.logic_app.logicLang.Model;
 public class LogicLangValidator extends AbstractLogicLangValidator {
 
 	// List all validation issue codes here:
-	public static final String NO_PROPOSITIONS = "noPropositions";
-	public static final String NO_COMMANDS = "noCommands";
-	public static final String INCONSISTENT_SYMBOLOGY = "inconsistentSymbology";
-	public static final String CONFIG_ISSUE = "configIssue";
-	public static final String SOLVER_ISSUE = "solverIssue";
+	public static final String ISSUE_NO_PROPOSITIONS = "noPropositions";
+	public static final String ISSUE_NO_COMMANDS = "noCommands";
+	public static final String ISSUE_INCONSISTENT_SYMBOLOGY = "inconsistentSymbology";
+	public static final String ISSUE_CONFIG_DUPE = "configDuplicate";
+	public static final String ISSUE_UNSUPPORTED_SOLVER = "unsupportedSolver";
+	public static final String ISSUE_NO_SOLVER = "noSolver";
+	public static final String ISSUE_SAT_BOOL = "satBool";
 
 	@Check(CheckType.NORMAL) // only check at build-time
 	public void checkForPropositions(Model model) {
@@ -35,7 +37,7 @@ public class LogicLangValidator extends AbstractLogicLangValidator {
 			warning("No propositions specified. No input to work on.",
 					// Note: LogicLangPackage stuff is auto-generated from the grammar
 					LogicLangPackage.Literals.MODEL__PROPOSITIONS,
-					LogicLangValidator.NO_PROPOSITIONS);
+					LogicLangValidator.ISSUE_NO_PROPOSITIONS);
 		}
 	}
 	

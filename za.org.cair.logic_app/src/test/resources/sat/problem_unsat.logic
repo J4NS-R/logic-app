@@ -1,8 +1,7 @@
 # these props are inconsistent
 prop A | (B -> C)
 prop ~C & B
-prop (D | F) -> ~A
+prop (D | Ff) -> ~A
 prop D
 
 cmd solve satisfiability
-
