@@ -14,12 +14,16 @@ import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
 /**
- * This program starts an HTTP server for testing the web integration of your DSL.
- * Just execute it and point a web browser to http://localhost:8080/
+ * This program starts an HTTP server for testing the web integration of the DSL.
  */
 public class ServerLauncher {
 	public static void main(String[] args) {
-		Server server = new Server(new InetSocketAddress("localhost", 8003));
+		int port = 8003; // default port
+		if (args.length > 0) {
+			port = Integer.parseInt(args[0]);
+		}
+		// listening on all interfaces so that external connections can access the app inside a container
+		Server server = new Server(new InetSocketAddress("0.0.0.0", port));
 		WebAppContext ctx = new WebAppContext();
 		ctx.setResourceBase("src/main/webapp/");
 		ctx.setWelcomeFiles(new String[] {"index.html"});
