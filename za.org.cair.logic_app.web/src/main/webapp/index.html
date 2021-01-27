@@ -58,7 +58,8 @@
 					document.getElementById("resultTag").innerHTML = result;
 				}
 			}
-			req.open( "POST", "http://localhost:8003/translate", true);
+			// do not prepend or append slashes to the URL! They mess up the reverse proxy at deployment.
+			req.open( "POST", "translate", true);
 			var text = ace.edit('xtext-editor').getSession().getValue();
 			req.send(text);
 
