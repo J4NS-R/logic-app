@@ -19,6 +19,7 @@ public class LogicLangServlet extends XtextServlet {
 	
 	DisposableRegistry disposableRegistry;
 	
+	@Override
 	public void init() throws ServletException {
 		super.init();
 		Injector injector = new LogicLangWebSetup().createInjectorAndDoEMFRegistration();

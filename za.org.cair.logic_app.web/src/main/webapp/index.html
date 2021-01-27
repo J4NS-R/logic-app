@@ -2,7 +2,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta http-equiv="Content-Language" content="en-us">
-	<title>Example Web Editor</title>
+	<title>Logic Web Editor</title>
 	<link rel="stylesheet" type="text/css" href="xtext/2.24.0/xtext-ace.css"/>
 	<link rel="stylesheet" type="text/css" href="style.css"/>
 	<script src="webjars/requirejs/2.3.6/require.min.js"></script>
@@ -28,17 +28,81 @@
 			});
 		});
 	</script>
+	
+
 </head>
 <body>
 
-<div class="container">
-	<div class="header">
-		<h1>Example LogicLang Web Editor</h1>
+	<div class="header" style="padding-top: 24px">
+		<h1>Logic Web Editor</h1>
 	</div>
 	<div class="content">
 		<div id="xtext-editor" data-editor-xtext-lang="logic"></div>
 	</div>
-</div>
 
+	<script>
+		function translateLogic() {
+			document.getElementById("resultTag").innerHTML = "compiling...";
+			console.log("function being triggered.");
+			let req = new XMLHttpRequest();
+			console.log("request created");
+			
+			req.onload = function () {
+				console.log(req.responseText);
+				var result = req.responseText;
+				result = result.replace(/\n/g, "<br />");
+				if (result == ""){
+					document.getElementById("resultTag").innerHTML = "Input invalid. Please see warnings in editor."	
+				}
+				else {
+					document.getElementById("resultTag").innerHTML = result;
+				}
+			}
+			req.open( "POST", "http://localhost:8003/translate", true);
+			var text = ace.edit('xtext-editor').getSession().getValue();
+			req.send(text);
+
+		}
+		
+		async function readTheFile() {
+			const file = document.getElementById('myfile').files[0];
+			const text = await file.text();
+			ace.edit("xtext-editor").getSession().setValue(text);
+		}
+		
+		function saveFile(fileName, text) {
+  			var element = document.createElement('a');
+  			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  			element.setAttribute('download', fileName+".logic");
+
+  			element.style.display = 'none';
+  			document.body.appendChild(element);
+
+  			element.click();
+
+  			document.body.removeChild(element);
+		}
+		
+	</script>
+<form onsubmit = "return false" style="position: absolute; left: 0;">
+	<label for="myfile">Select a file</label>
+	<input type="file" id="myfile"></input>
+	<button onClick="readTheFile()"> Upload </button>
+</form>
+<form onsubmit = "return false" style="position: absolute; right: 0;">
+	<label for="newFileName">Enter name to save file as: </label>
+	<input type="text" id="newFileName"></input>
+	<button onClick="saveFile(document.getElementById('newFileName').value, ace.edit('xtext-editor').getSession().getValue())">Save To Device</button>
+</form>
+<br/>
+<br/>
+<br/>
+<div style="position: absolute; margin-top: 50; left:700;">
+<button onClick="translateLogic()"> Compile </button>
+</div>
+<h2 style="position: absolute; margin-top: 40; left: 800;" > Compilation Results:</h2>
+<h3 id="resultTag" style="position: absolute; margin-top: 75; left:800;" ></h3>
 </body>
 </html>
+
+
