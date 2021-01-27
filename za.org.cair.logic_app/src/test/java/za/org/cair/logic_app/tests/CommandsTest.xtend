@@ -16,10 +16,31 @@ class CommandsTest {
 		val src = '''
 			prop A | B
 			prop C -> D
-			cmd just parse
 		'''
 		
-		TestingHelper.assertIssue(src, LogicLangValidator.NO_COMMANDS);
+		TestingHelper.assertIssue(src, LogicLangValidator.ISSUE_NO_COMMANDS);
 
 	}
+	
+	@Test
+	def void satNoSolver(){
+		TestingHelper.assertIssue('''
+			prop Ayy | Bee
+			cmd solve satisfiability
+		''',
+			LogicLangValidator.ISSUE_NO_SOLVER
+		)
+	}
+	
+	@Test
+	def void satBool(){
+		TestingHelper.assertIssue('''
+			prop var1 & True
+			cmd solve satisfiability
+			config solver='sat4j'
+		''',
+			LogicLangValidator.ISSUE_SAT_BOOL
+		)
+	}
+	
 }

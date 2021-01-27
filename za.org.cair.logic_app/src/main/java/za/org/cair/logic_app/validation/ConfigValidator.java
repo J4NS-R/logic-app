@@ -38,7 +38,7 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 			if (configs.contains(cfg.getKey())) { // duplicate key
 				error("Duplicate config item for key: "+cfg.getKey().getName(),
 						cfg, LogicLangPackage.Literals.CONFIG__KEY,
-						LogicLangValidator.CONFIG_ISSUE);
+						LogicLangValidator.ISSUE_CONFIG_DUPE);
 			} else {
 				configs.add(cfg.getKey());
 			}
@@ -52,7 +52,7 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 			if (!Arrays.contains(SOLVERS, cfg.getValue())) {
 				error("Solver '"+cfg.getValue()+"' not supported.",
 						cfg, LogicLangPackage.Literals.CONFIG__VALUE,
-						LogicLangValidator.CONFIG_ISSUE);
+						LogicLangValidator.ISSUE_UNSUPPORTED_SOLVER);
 			}
 		}// more cfg checks here
 	}
@@ -80,7 +80,7 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 			if (!aptConfig) {
 				error("No solver specified in config.",
 						commandInQuestion, LogicLangPackage.Literals.SOLVE_COMMAND__WHAT,
-						LogicLangValidator.SOLVER_ISSUE);
+						LogicLangValidator.ISSUE_NO_SOLVER);
 			}
 			
 			// check for boolean literals
@@ -101,7 +101,7 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 		if (sent instanceof BooleanLiteral) {
 			warning("Do not use boolean literals with SAT solving", sent,
 					LogicLangPackage.Literals.BOOLEAN_LITERAL__TRUTH,
-					LogicLangValidator.SOLVER_ISSUE);
+					LogicLangValidator.ISSUE_SAT_BOOL);
 		}else if (LogicLangHelper.isComplexSentence(sent)) {
 			warnBooleanLiteral(LogicLangHelper.getLeftSide(sent));
 			warnBooleanLiteral(LogicLangHelper.getRightSide(sent));

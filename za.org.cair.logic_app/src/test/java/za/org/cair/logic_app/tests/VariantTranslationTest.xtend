@@ -6,6 +6,7 @@ import org.eclipse.xtext.testing.InjectWith
 import javax.inject.Inject
 import org.junit.jupiter.api.Test
 import org.eclipse.xtext.xbase.testing.CompilationTestHelper
+import za.org.cair.logic_app.validation.LogicLangValidator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(LogicLangInjectorProvider)
@@ -42,12 +43,12 @@ class VariantTranslationTest {
 	
 	@Test
 	def void testSymbolConsistency() {
-//		val res = parseHelper.parse('''
-//		prop A -> B
-//		prop B and C
-//		cmd just parse
-//		''')
-//		val iss = validationHelper.validate(res)
-//		println(iss)
+		TestingHelper.assertIssue('''
+		prop A -> B
+		prop B and C
+		cmd just parse
+		''',
+			LogicLangValidator.ISSUE_INCONSISTENT_SYMBOLOGY
+		)
 	}
 }

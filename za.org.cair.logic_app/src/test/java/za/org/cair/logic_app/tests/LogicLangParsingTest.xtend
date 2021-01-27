@@ -24,6 +24,7 @@ import za.org.cair.logic_app.logicLang.Disjunction
 import za.org.cair.logic_app.logicLang.Conjunction
 import za.org.cair.logic_app.logicLang.Negation
 import za.org.cair.logic_app.logicLang.BooleanValuesEnum
+import za.org.cair.logic_app.validation.LogicLangValidator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(LogicLangInjectorProvider)
@@ -44,6 +45,15 @@ class LogicLangParsingTest {
 		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
 		
 		// println(dump(result, ""))
+	}
+	
+	@Test
+	def void noProps(){
+		TestingHelper.assertIssue('''
+			cmd just parse
+		''',
+			LogicLangValidator.ISSUE_NO_PROPOSITIONS 
+		)
 	}
 	
 	@Test
