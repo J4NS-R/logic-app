@@ -1,5 +1,4 @@
-# Logic app
-(better name needed)
+# CAIR Logic Platform
 
 ## Purpose
 The goal of this repo is to provide a platform for generic logic operations (checking for consistency, validity, explanations, etc.) by way of an easy-to-use DSL. 
@@ -7,26 +6,13 @@ The goal of this repo is to provide a platform for generic logic operations (che
 ## Mission
 The purpose is achieved by way of three parts:
 - The DSL specification and generator (`za.org.cair.logic_app`)
-- An IDE plugin (`za.org.cair.logic_app.ide`)
+- An IDE plugin (`za.org.cair.logic_app.ide`) (Not implemented)
 - A webapp editor (`za.org.cair.logic_app.web`)
 
 ## Usage
 
-### On the CLI
+See the [wiki entry](https://github.com/Koellewe/logic-app/wiki/Running-and-Deployment).
 
-Xtext compilers are not typically used on the command like (like e.g. `gcc` and `javac`) so support (especially in CI contexts) is very limited. Through some shady hacks I got it working (for now). 
+## More info
 
-Download the compiler jar from the [CLI logic lang compiler workflow](https://github.com/Koellewe/logic-app/actions?query=workflow%3A%22Build+CLI+logic+lang+compiler%22) build artifacts. Create a file written in the specified logic language (with `.logic` as file extension). Compile as follows:
-
-```sh
-java -jar logic-compiler.jar example.logic
-```
-
-Ignore the reflection warnings. They are caused in Java 11 onwards by a lib xtext depends on and will be updated once the developers there get their act together. [More info](https://github.com/eclipse/xtext-core/issues/506).
-
-
-### As library / on Web / in IDE
-
-TODO
-
-
+See the [wiki](https://github.com/Koellewe/logic-app/wiki).
