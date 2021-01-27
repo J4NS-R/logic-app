@@ -32,27 +32,37 @@
 
 </head>
 <body>
-<div class="container">
+
 	<div class="header">
-		<h1>Example LogicLang Web Editor</h1>
+		<h1>LogicLang Web Editor</h1>
 	</div>
 	<div class="content">
 		<div id="xtext-editor" data-editor-xtext-lang="logic"></div>
 	</div>
-</div>
+
 	<script>
 		function translateLogic() {
+			document.getElementById("resultTag").innerHTML = "compiling...";
 			console.log("function being triggered.");
 			let req = new XMLHttpRequest();
 			console.log("request created");
-			req.open( "POST", "http://localhost:8003/translate", false);
+			
+			req.onload = function () {
+				console.log(req.responseText);
+				var result = req.responseText;
+				result = result.replace(/\n/g, "<br />");
+				if (result == ""){
+					document.getElementById("resultTag").innerHTML = "Input invalid. Please see warnings in editor."	
+				}
+				else {
+					document.getElementById("resultTag").innerHTML = result;
+				}
+			}
+			req.open( "POST", "http://localhost:8003/translate", true);
 			var text = ace.edit('xtext-editor').getSession().getValue();
 			req.send(text);
-			console.log(req.responseText);
-			var result = req.responseText;
-			result = result.replace(/\n/g, "<br />");
-			document.getElementById("resultTag").innerHTML = result;
-			}
+
+		}
 		
 		async function readTheFile() {
 			const file = document.getElementById('myfile').files[0];
@@ -60,39 +70,38 @@
 			ace.edit("xtext-editor").getSession().setValue(text);
 		}
 		
-		function saveFile() {
-			var newFileName = document.getElementById("newFileName").value;
-			newFileName = newFileName + ".logic";
-			//const fs = require('fs')
-			//fs.writeFile(newFileName, ace.edit('xtext-editor').getSession().getValue(), (err) => { 
-    		//	if (err) throw err; 
-			//	})
-			var file = new File([""], "./"+newFileName);
-			//file.open("w");
-			file.write(ace.edit('xtext-editor').getSession().getValue());
-			file.close();
-			var element = document.createElement('a');
+		function saveFile(fileName, text) {
+  			var element = document.createElement('a');
   			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  			element.setAttribute('download', newFileName);
-			element.style.display = 'none';
+  			element.setAttribute('download', fileName+".logic");
+
+  			element.style.display = 'none';
   			document.body.appendChild(element);
+
   			element.click();
+
   			document.body.removeChild(element);
 		}
 		
 	</script>
-<form onsubmit = "return false" style="position: absolute; right: 0;">
+<form onsubmit = "return false" style="position: absolute; left: 0;">
 	<label for="myfile">Select a file</label>
 	<input type="file" id="myfile"></input>
 	<button onClick="readTheFile()"> Upload </button>
-	<button onClick="translateLogic()"> Compile </button>
 </form>
-<form onsubmit = "return false" style="position: absolute; left: 0;">
+<form onsubmit = "return false" style="position: absolute; right: 0;">
 	<label for="newFileName">Enter name to save file as: </label>
 	<input type="text" id="newFileName"></input>
-	<button onClick="saveFile()">Save To Device</button>
+	<button onClick="saveFile(document.getElementById('newFileName').value, ace.edit('xtext-editor').getSession().getValue())">Save To Device</button>
 </form>
-<h3 id="resultTag" style="position: absolute; margin-top: 40; right:0; "></h3>
+<br/>
+<br/>
+<br/>
+<div style="position: absolute; margin-top: 50; left:700;">
+<button onClick="translateLogic()"> Compile </button>
+</div>
+<h2 style="position: absolute; margin-top: 40; left: 800;" > Compilation Results:</h2>
+<h3 id="resultTag" style="position: absolute; margin-top: 75; left:800;" ></h3>
 </body>
 </html>
 

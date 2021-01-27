@@ -20,7 +20,7 @@ public class ExternalCompiler {
 	 * @return the compiled text output
 	 */
 	static String compileToString(String sourceCode) throws Exception {
-		
+		System.out.println("source code is the following: \n" + sourceCode);
 		// check for compiler
 		if (!new File(COMPILER_JAR).exists())
 			throw new IllegalStateException(COMPILER_JAR+" not found. Please generate/download it and place it in this program's working dir.");
@@ -45,7 +45,7 @@ public class ExternalCompiler {
 		
 		// clean up
 		new File(logicFile).delete();
-		
+		System.out.println("Returning String");
 		return compiled.toString();
 	}
 	

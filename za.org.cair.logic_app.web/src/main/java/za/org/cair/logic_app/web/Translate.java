@@ -29,13 +29,13 @@ public class Translate extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
 		String input = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-		File inputFile = new File("inputFile.logic");
-		inputFile.createNewFile();
-		FileWriter fileWriter = new FileWriter("inputFile.logic");
-		fileWriter.write(input);
-		fileWriter.close();
-        response.getWriter().print(Main.generateToStringFromFile("inputFile.logic"));
-        inputFile.delete();
-    }
-    
+		String toReturn = "";
+		try {
+			toReturn = ExternalCompiler.compileToString(input);			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("value being returned is \n" + toReturn);
+		response.getWriter().print(toReturn);
+	}
 }
