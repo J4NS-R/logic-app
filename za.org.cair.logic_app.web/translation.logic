@@ -1,3 +1,0 @@
-prop (A implies (not B or D))
-prop (B or C)
-prop not (A implies C)
