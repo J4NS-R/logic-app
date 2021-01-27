@@ -1,5 +1,7 @@
 package za.org.cair.logic_app.validation;
 
+import java.util.HashSet;
+
 import org.eclipse.xtext.util.Arrays;
 import org.eclipse.xtext.validation.AbstractDeclarativeValidator;
 import org.eclipse.xtext.validation.Check;
@@ -25,7 +27,16 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 	
 	@Check(CheckType.NORMAL)
 	public void checkConfigUnique(Model model) {
-		// TODO
+		HashSet<ConfigKey> configs = new HashSet<>();
+		for (Config cfg : model.getConfig()) {
+			if (configs.contains(cfg.getKey())) { // duplicate key
+				error("Duplicate config item for key: "+cfg.getKey().getName(),
+						cfg, LogicLangPackage.Literals.CONFIG__KEY,
+						LogicLangValidator.CONFIG_ISSUE);
+			} else {
+				configs.add(cfg.getKey());
+			}
+		}
 	}
 	
 	@Check(CheckType.NORMAL) 
