@@ -1,5 +1,7 @@
 package za.org.cair.logic_app;
 
+import java.util.Random;
+
 import org.eclipse.emf.mwe2.language.mwe2.impl.BooleanLiteralImplCustom;
 
 import za.org.cair.logic_app.logicLang.BooleanLiteral;
@@ -19,6 +21,9 @@ import za.org.cair.logic_app.logicLang.impl.ImplicationImpl;
 import za.org.cair.logic_app.logicLang.impl.NegationImpl;
 
 public class LogicLangHelper {
+	
+	// used for #randomHash()
+	private static Random rand = new Random();
 
 	/**
 	 * Checks if the sentence is complex (i.e. has a left and right side)
@@ -163,6 +168,13 @@ public class LogicLangHelper {
 		}else {
 			throw new IllegalArgumentException("Cannot copy sentence: "+sent);
 		}
+	}
+	
+	/**
+	 * Create a random hash. Useful for e.g. concurrent filesystem access
+	 */
+	public static String randomHash(int basis) {
+		return Integer.toHexString(basis * (rand.nextInt()+1));
 	}
 	
 }
