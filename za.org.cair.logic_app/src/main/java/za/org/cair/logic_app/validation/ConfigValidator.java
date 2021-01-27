@@ -8,16 +8,22 @@ import org.eclipse.xtext.validation.Check;
 import org.eclipse.xtext.validation.CheckType;
 import org.eclipse.xtext.validation.EValidatorRegistrar;
 
+import za.org.cair.logic_app.LogicLangHelper;
+import za.org.cair.logic_app.logicLang.BooleanLiteral;
 import za.org.cair.logic_app.logicLang.Command;
 import za.org.cair.logic_app.logicLang.Config;
 import za.org.cair.logic_app.logicLang.ConfigKey;
 import za.org.cair.logic_app.logicLang.LogicLangPackage;
 import za.org.cair.logic_app.logicLang.Model;
+import za.org.cair.logic_app.logicLang.Negation;
+import za.org.cair.logic_app.logicLang.Proposition;
+import za.org.cair.logic_app.logicLang.Sentence;
 import za.org.cair.logic_app.logicLang.SolutionRequest;
 import za.org.cair.logic_app.logicLang.SolveCommand;
 
 public class ConfigValidator extends AbstractDeclarativeValidator {
 	
+	// supported SAT solvers to be listed here
 	private static String[] SOLVERS = new String[] {"sat4j"};
 
 	@Override
@@ -42,6 +48,7 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 	@Check(CheckType.NORMAL) 
 	public void checkConfig(Config cfg) {
 		if (cfg.getKey() == ConfigKey.SOLVER) {
+			// check that solver is valid
 			if (!Arrays.contains(SOLVERS, cfg.getValue())) {
 				error("Solver '"+cfg.getValue()+"' not supported.",
 						cfg, LogicLangPackage.Literals.CONFIG__VALUE,
@@ -75,7 +82,32 @@ public class ConfigValidator extends AbstractDeclarativeValidator {
 						commandInQuestion, LogicLangPackage.Literals.SOLVE_COMMAND__WHAT,
 						LogicLangValidator.SOLVER_ISSUE);
 			}
+			
+			// check for boolean literals
+			for (Proposition prop : model.getPropositions()) {
+				warnBooleanLiteral(prop.getSentence());
+			}
+			
 		}
+	}
+	
+	/**
+	 * Recursively find boolean literals and throw a warning for each.
+	 * Rationale: SAT solvers interpret "True" and "False" as variables and
+	 * so may end up assigning True=False to find satisfiability. Best to do
+	 * some math and drop the literals.  
+	 */
+	private void warnBooleanLiteral(Sentence sent) {
+		if (sent instanceof BooleanLiteral) {
+			warning("Do not use boolean literals with SAT solving", sent,
+					LogicLangPackage.Literals.BOOLEAN_LITERAL__TRUTH,
+					LogicLangValidator.SOLVER_ISSUE);
+		}else if (LogicLangHelper.isComplexSentence(sent)) {
+			warnBooleanLiteral(LogicLangHelper.getLeftSide(sent));
+			warnBooleanLiteral(LogicLangHelper.getRightSide(sent));
+		}else if (sent instanceof Negation) {
+			warnBooleanLiteral(((Negation) sent).getExpression());
+		} // else BooleanVariable
 	}
 	
 }
