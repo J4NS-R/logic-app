@@ -58,7 +58,7 @@
 					document.getElementById("resultTag").innerHTML = result;
 				}
 			}
-			req.open( "POST", "http://localhost:8003/translate", true);
+			req.open( "POST", "/translate", true);
 			var text = ace.edit('xtext-editor').getSession().getValue();
 			req.send(text);
 
