@@ -189,8 +189,8 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
-        tags:
-        - ${{ secrets.DOCKER_HUB_PATH }}:latest 
-        - ${{ secrets.DOCKER_HUB_PATH }}:stable
+        tags: |
+          ${{ secrets.DOCKER_HUB_PATH }}:latest 
+          ${{ secrets.DOCKER_HUB_PATH }}:stable
 
 
