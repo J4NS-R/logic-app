@@ -28,31 +28,58 @@
 			});
 		});
 	</script>
-	
+
 
 </head>
 <body>
 
-	<div class="header" style="padding-top: 24px">
-		<h1>Logic Web Editor</h1>
+	<div style="padding-top: 1px; padding-left: 8px; padding-bottom: 8px; background-color: lightgrey;">
+		<h1 style="margin-bottom: 0;">Logic Web Editor</h1>
+		<sub><a href="https://www.cair.org.za/">CAIR</a> Logic Reasoning Platform</sub>
+		<sub style="margin-left: 24px;">|</sub>
+		<sub style="margin-left: 24px;"><a href="https://github.com/Koellewe/logic-app">Source code</a></sub>
+		</div>
 	</div>
-	<div class="content">
-		<div id="xtext-editor" data-editor-xtext-lang="logic"></div>
+
+	<!-- this is absolute, whether you like it or not -->
+	<div id="xtext-editor" data-editor-xtext-lang="logic" style="max-width: 50vw; margin-top: 114px; margin-left: 8px; max-height: 70vh;"></div>
+
+	<div style="margin-left: 52vw; max-width: 50vw; margin-top: 12px;">
+		<p style="font-weight: bold;"><a href="https://github.com/Koellewe/logic-app/wiki/Features"
+			target="_blank">Click here to get help and examples</a>.</p>
+		<div >
+			<button onClick="translateLogic()"> Compile </button>
+		</div>
+		<h2 > Compilation Results:</h2>
+		<pre id="resultTag" style="" ></pre>
 	</div>
+
+	<div style="position: absolute; top: 85vh;">
+			<form onsubmit = "return false">
+				<label for="newFileName">Save as: </label>
+				<input type="text" id="newFileName"></input>
+				<button onClick="saveFile(document.getElementById('newFileName').value, ace.edit('xtext-editor').getSession().getValue())">Save To Device</button>
+			</form>
+			<form onsubmit = "return false">
+				<label for="myfile">Select a file</label>
+				<input type="file" id="myfile"></input>
+				<button onClick="readTheFile()"> Import </button>
+			</form>
+	</div>
+
+
 
 	<script>
 		function translateLogic() {
 			document.getElementById("resultTag").innerHTML = "compiling...";
-			console.log("function being triggered.");
 			let req = new XMLHttpRequest();
-			console.log("request created");
-			
+
 			req.onload = function () {
 				console.log(req.responseText);
 				var result = req.responseText;
 				result = result.replace(/\n/g, "<br />");
 				if (result == ""){
-					document.getElementById("resultTag").innerHTML = "Input invalid. Please see warnings in editor."	
+					document.getElementById("resultTag").innerHTML = "Input invalid. Please see warnings in editor."
 				}
 				else {
 					document.getElementById("resultTag").innerHTML = result;
@@ -64,13 +91,13 @@
 			req.send(text);
 
 		}
-		
+
 		async function readTheFile() {
 			const file = document.getElementById('myfile').files[0];
 			const text = await file.text();
 			ace.edit("xtext-editor").getSession().setValue(text);
 		}
-		
+
 		function saveFile(fileName, text) {
   			var element = document.createElement('a');
   			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -83,27 +110,8 @@
 
   			document.body.removeChild(element);
 		}
-		
+
 	</script>
-<form onsubmit = "return false" style="position: absolute; left: 0;">
-	<label for="myfile">Select a file</label>
-	<input type="file" id="myfile"></input>
-	<button onClick="readTheFile()"> Upload </button>
-</form>
-<form onsubmit = "return false" style="position: absolute; right: 0;">
-	<label for="newFileName">Enter name to save file as: </label>
-	<input type="text" id="newFileName"></input>
-	<button onClick="saveFile(document.getElementById('newFileName').value, ace.edit('xtext-editor').getSession().getValue())">Save To Device</button>
-</form>
-<br/>
-<br/>
-<br/>
-<div style="position: absolute; margin-top: 50; left:700;">
-<button onClick="translateLogic()"> Compile </button>
-</div>
-<h2 style="position: absolute; margin-top: 40; left: 800;" > Compilation Results:</h2>
-<h3 id="resultTag" style="position: absolute; margin-top: 75; left:800;" ></h3>
+
 </body>
 </html>
-
-
