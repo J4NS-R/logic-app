@@ -1,5 +1,7 @@
 # CAIR Logic Platform
 
+[![Main workflow](https://github.com/Koellewe/logic-app/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/Koellewe/logic-app/actions/workflows/main.yml)
+
 ## Purpose
 The goal of this repo is to provide a platform for generic logic operations (checking for consistency, validity, explanations, etc.) by way of an easy-to-use DSL. 
 
